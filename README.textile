@@ -1,9 +1,53 @@
 h1. PHP FogBugz API Wrapper / Helper
 
-h2. fogbugz-api.php
+This set of scripts and helper methods was written for my own use in getting several tasks accomplished.  
 
-h3. Sandbox Console
+We made use of the FogBugz API in order to do two things:
+	
+	Move our existing LightHouse App tickets into FogBugz as new Cases (see bonus LightHouse API section below)
+	Create a custom GitHub Hook script that allows us to modify the ticket using our commit messages
 
-lorem ipsum
+h2. The 'fogbugz-api.php' Class
 
-<pre>./google.com --sandbox</pre>
+This class is the meat of the scripts, all interaction with FogBugz is contained here.  Below are the methods that are available to use with brief descriptions of each. Also, see the 'create-new-case.php' file for examples. To instantiate a new FogBugz connection with the class, you would call it like so.
+
+<pre>$fogbugz = new FogBugz($your_fogbugz_url, $your_fogbugz_username, $your_fogbugz_password);</pre>
+
+This will open a new connection to FogBugz via their API and log you in so that you can begin using the API to issue commands.  Upon session termination the class destructor will be called which will also call the logout() method in order to log your session out of the FogBugz API.
+
+h4. createCase() - Create a new FogBugz Case
+
+<pre>$fogbugz->createCase($title, $project, $area, $category, $priority_id, $body, $assignedTo_id = false);</pre>
+
+$title, $project, $area, $category, $body must all be provided as STRINGS (no HTML allowed even in $body)!
+
+$priority_id and (optional) $assignedTo_id must be provided as INTEGERS!  When present, $assignedTo_id will be used to automatically assign the new Case to the specified user on creation.
+
+h4. addCaseReply() - Add a Reply to a FogBugz Case
+
+<pre>$fogbugz->addCaseReply($case_id, $body, $as_user_id = null);</pre>
+
+This is the same as resolveCase(), the only difference being that the status of the case remains unchanged and only an edit is applied.
+
+h4. triggerCommit() - Attach a Commit to a FogBugz Case
+
+<pre>$fogbugz->triggerCommit($case_id, $payload);</pre>
+
+Adds a commit to the given $case_id.  The $payload should be an array with the following key/value pairs:
+<pre>
+	$payload['sFile'] = 'filename_of_edited_file';
+	$payload['sPrev'] = 'Old_ChangeSet_ID';
+	$payload['sNew'] = 'New_ChangeSet_ID';
+</pre>
+
+h4. resolveCase() - Resolves a FogBugz Case
+
+<pre>$fogbugz->resolveCase($case_id, $body=null, $resolved_as_id = null);</pre>
+
+If you supply a $body, that text will be entered in to the reply that marks the case as 'Resolved'.  
+
+If you supply a $resolved_as_id, the user ID that you provide will be the user that marks the FogBugz case as resolved (MUST be using an FogBugz Admin login for this to work!)
+
+h4. getCases() - Fetch FogBugz Cases
+
+I didn't end up really using this method for our work, so it's largely un-tested.  Check the code for more info.
