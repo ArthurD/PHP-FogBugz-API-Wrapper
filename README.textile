@@ -6,16 +6,27 @@ We made use of the FogBugz API in order to do two things:
 	
 	Move our existing LightHouse App tickets into FogBugz as new Cases (see bonus LightHouse API section below)
 	Create a custom GitHub Hook script that allows us to modify the ticket using our commit messages
+	
+
+h2. Requirements, Dependencies, & Use
+
+h3. Requirements & Dependencies
+
+In order to use these scripts you'll need PHP5+ that has been built with support for CURL & SimpleXML.  The curl.php script is simply a helper class that I commonly use to issue curl commands and that I've included with these scripts...
+
+h3. Use
+
+You may freely use or modify the code as you see fit for any purpose.  If you make useful additions or modifications that may benefit others I'd definitely like to get them into the repo, just let me know!  If you have any questions I'll try to help but no promises!  The code is distributed as-is, use at your own risk!
 
 h2. The 'fogbugz-api.php' Class
 
 This class is the meat of the scripts, all interaction with FogBugz is contained here.  Below are the methods that are available to use with brief descriptions of each. Also, see the 'create-new-case.php' file for examples. To instantiate a new FogBugz connection with the class, you would call it like so.
 
-<pre>$fogbugz = new FogBugz($your_fogbugz_url, $your_fogbugz_username, $your_fogbugz_password);</pre>
+<pre>$fogbugz = new FogBugz($your_fogbugz_api_url, $your_fogbugz_username, $your_fogbugz_password);</pre>
 
 This will open a new connection to FogBugz via their API and log you in so that you can begin using the API to issue commands.  Upon session termination the class destructor will be called which will also call the logout() method in order to log your session out of the FogBugz API.
 
-h4. createCase() - Create a new FogBugz Case
+h3. createCase() - Create a new FogBugz Case
 
 <pre>$fogbugz->createCase($title, $project, $area, $category, $priority_id, $body, $assignedTo_id = false);</pre>
 
@@ -23,24 +34,22 @@ $title, $project, $area, $category, $body must all be provided as STRINGS (no HT
 
 $priority_id and (optional) $assignedTo_id must be provided as INTEGERS!  When present, $assignedTo_id will be used to automatically assign the new Case to the specified user on creation.
 
-h4. addCaseReply() - Add a Reply to a FogBugz Case
+h3. addCaseReply() - Add a Reply to a FogBugz Case
 
 <pre>$fogbugz->addCaseReply($case_id, $body, $as_user_id = null);</pre>
 
 This is the same as resolveCase(), the only difference being that the status of the case remains unchanged and only an edit is applied.
 
-h4. triggerCommit() - Attach a Commit to a FogBugz Case
+h3. triggerCommit() - Attach a Commit to a FogBugz Case
 
 <pre>$fogbugz->triggerCommit($case_id, $payload);</pre>
 
 Adds a commit to the given $case_id.  The $payload should be an array with the following key/value pairs:
-<pre>
-	$payload['sFile'] = 'filename_of_edited_file';
-	$payload['sPrev'] = 'Old_ChangeSet_ID';
-	$payload['sNew'] = 'New_ChangeSet_ID';
-</pre>
+<pre>$payload['sFile'] = 'filename_of_edited_file';
+$payload['sPrev'] = 'Old_ChangeSet_ID';
+$payload['sNew'] = 'New_ChangeSet_ID';</pre>
 
-h4. resolveCase() - Resolves a FogBugz Case
+h3. resolveCase() - Resolves a FogBugz Case
 
 <pre>$fogbugz->resolveCase($case_id, $body=null, $resolved_as_id = null);</pre>
 
@@ -48,6 +57,29 @@ If you supply a $body, that text will be entered in to the reply that marks the 
 
 If you supply a $resolved_as_id, the user ID that you provide will be the user that marks the FogBugz case as resolved (MUST be using an FogBugz Admin login for this to work!)
 
-h4. getCases() - Fetch FogBugz Cases
+h3. getCases() - Fetch FogBugz Cases
 
 I didn't end up really using this method for our work, so it's largely un-tested.  Check the code for more info.
+
+h2. Custom GitHub Hook (github-custom-hook.php)
+
+Make the required settings changes, upload this file to a server, and then add a custom hook URL within the GitHub admin panel that points to it.  When properly setup you can attach any commit to a Case by using a commit message like this:
+
+<pre>git commit -m "Adds feature X as requested.  [#122]"</pre>
+
+This would tag the commit to the Case #122.  You can also use a commit message to mark a Case as resolved using the following command:
+
+<pre>git commit -m "Adds feature Y as requested. [#122 resolved]"</pre>
+
+With minor modifications you can easily add or modify the functionality and the the syntax of the commands.
+
+h2. LightHouse API (Bonus!)
+
+I'll get my (similar to the FogBugz API Class) PHP LightHouse API Class uploaded shortly for anyone who may be interested in using that as well.  It's pretty barebones, but may be useful if you're working with LightHouseApp as well.
+
+h2. Contact Me
+
+My name is Arthur D'Antonio III and I'm the creator of these scripts.  You're more than welcome to contact me with any questions, comments, or feedback!
+
+<b>Arthur [at] DAntonio [dot] info</b>
+
