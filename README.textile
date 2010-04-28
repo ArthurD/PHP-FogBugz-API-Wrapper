@@ -82,4 +82,3 @@ h2. Contact Me
 My name is Arthur D'Antonio III and I'm the creator of these scripts.  You're more than welcome to contact me with any questions, comments, or feedback!
 
 <b>Arthur [at] DAntonio [dot] info</b>
-
