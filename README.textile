@@ -72,13 +72,3 @@ This would tag the commit to the Case #122.  You can also use a commit message t
 <pre>git commit -m "Adds feature Y as requested. [#122 resolved]"</pre>
 
 With minor modifications you can easily add or modify the functionality and the the syntax of the commands.
-
-h2. LightHouse API (Bonus!)
-
-I'll get my (similar to the FogBugz API Class) PHP LightHouse API Class uploaded shortly for anyone who may be interested in using that as well.  It's pretty barebones, but may be useful if you're working with LightHouseApp as well.
-
-h2. Contact Me
-
-My name is Arthur D'Antonio III and I'm the creator of these scripts.  You're more than welcome to contact me with any questions, comments, or feedback!
-
-<b>Arthur [at] DAntonio [dot] info</b>
